@@ -12,3 +12,6 @@
 4. git secret add credentials.json
 4. git hide
 5. git commit
+
+#TODO
+Add Generic todos (non-repo)
