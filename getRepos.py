@@ -1,14 +1,23 @@
-USER='brandonchaffee'
-API_TOKEN=''
-GIT_API_URL='https://api.github.com'
+import requests
+import json
+import re
+with open('credentials.json') as f:
+    credentials = json.load(f)
 
-def get_api(url):
-    try:
-        request = urllib2.Request(GIT_API_URL + url)
-        base64string = base64.encodestring('%s/token:%s' % (USER, API_TOKEN)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
-        result = urllib2.urlopen(request)
-        print(result)
-        result.close()
-    except:
-        print('Failed to get api request from %s' % url)
+URL = 'https://api.github.com/users/'
+username = credentials['username']
+token = credentials['token']
+spec = '/repos?access_token='
+
+requestURL = URL + username + spec + token
+
+r = requests.get(requestURL)
+
+repoArray = []
+for item in r.json():
+    clone = item['clone_url'].encode("utf-8")
+    repoName = re.search(username + '/(.*).git', clone).group(1)
+    repoObj = { 'name': repoName, 'link': clone }
+    repoArray.append(repoObj)
+
+print(repoArray)
